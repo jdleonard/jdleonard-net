@@ -17,7 +17,7 @@ jobs:
           pantheon-machine-token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
         run: |
           composer global require pantheon-systems/terminus
-          terminus auth:login --machine-token=$pantheon-machine-token
+          /.config/composer/vendor/bin/terminus auth:login --machine-token=$pantheon-machine-token
       - name: deployer
         env:
           pantheon_repo: '${{ secrets.PANTHEON_REPO }}'
@@ -26,4 +26,4 @@ jobs:
           git remote add pantheon $pantheon_repo
           git push --force pantheon HEAD:master
           commit_message=$(git log -1 --pretty=%B)
-          terminus env:deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
+          /.config/composer/vendor/bin/terminus env:deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
