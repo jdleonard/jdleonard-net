@@ -8,28 +8,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.PANTHEON_SSH_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      - name: Installing Terminus
-        env:
-          pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+      - name: Install dependencies
         run: |
           composer global require hirak/prestissimo
-          composer global require consolidation/cgr
-          PATH="$(composer config -g home)/vendor/bin:$PATH"
-          echo "::add-path::$(composer config -g home)/vendor/bin"
-          cgr pantheon-systems/terminus
-          terminus auth:login --machine-token=$pantheon_machine_token
-      - name: deployer
-        env:
-          pantheon_repo: '${{ secrets.PANTHEON_REPO }}'
-          pantheon_site_name: '${{ secrets.PANTHEON_SITE_NAME }}'
-        run: |
-          git remote add pantheon $pantheon_repo
-          git push --force pantheon HEAD:master
-          terminus drush -y $pantheon_site_name.dev updatedb
-          terminus drush -y $pantheon_site_name.dev config:import
+          composer install --prefer-dist --no-progress
+#  deploy:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v1
+#      - uses: shimataro/ssh-key-action@v2
+#        with:
+#          key: ${{ secrets.PANTHEON_SSH_KEY }}
+#          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+#      - name: Install Terminus
+#        env:
+#          pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+#        run: |
+#          composer global require hirak/prestissimo
+#          composer global require consolidation/cgr
+#          PATH="$(composer config -g home)/vendor/bin:$PATH"
+#          echo "::add-path::$(composer config -g home)/vendor/bin"
+#          cgr pantheon-systems/terminus
+#          terminus auth:login --machine-token=$pantheon_machine_token
+#      - name: Deploy to Pantheon Dev
+#        env:
+#          pantheon_repo: ${{ secrets.PANTHEON_REPO }}
+#          pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
+#        run: |
+#          git remote add pantheon $pantheon_repo
+#          git push --force pantheon HEAD:master
+#          terminus drush -y $pantheon_site_name.dev updatedb
+#          terminus drush -y $pantheon_site_name.dev config:import
 #          commit_message=$(git log -1 --pretty=%B)
 #          terminus deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
