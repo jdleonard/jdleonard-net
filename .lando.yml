@@ -1,0 +1,21 @@
+name: jdl
+recipe: pantheon
+config:
+  framework: drupal8
+  site: jdl8
+  id: bb918add-0cd5-47e0-beae-840ede5aeba4
+  xdebug: false
+  index: false
+  edge: true
+  cache: false
+services:
+  appserver:
+    overrides:
+      environment:
+        DRUSH_OPTIONS_URI: https://jdl.lndo.site
+    run:
+      - composer install
+excludes:
+  - vendor
+  - web/libraries
+  - web/themes/custom/jd1/node_modules

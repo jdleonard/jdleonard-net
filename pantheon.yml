@@ -1,0 +1,19 @@
+api_version: 1
+web_docroot: true
+enforce_https: transitional
+php_version: 7.4
+protected_web_paths:
+  - /private
+workflows:
+  deploy:
+    after:
+      # Log to New Relic when deploying to test or live.
+      - type: webphp
+        description: Log to New Relic
+        script: private/scripts/new_relic_deploy.php
+  sync_code:
+    after:
+      # Also log sync_code so you can track new code going into dev/multidev.
+      - type: webphp
+        description: Log to New Relic
+        script: private/scripts/new_relic_deploy.php
