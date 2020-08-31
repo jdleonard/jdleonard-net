@@ -18,6 +18,7 @@ jobs:
         run: |
           composer global require consolidation/cgr
           PATH="$(composer config -g home)/vendor/bin:$PATH"
+          echo "::add-path::$(composer config -g home)/vendor/bin"
           cgr pantheon-systems/terminus
           terminus auth:login --machine-token=$pantheon_machine_token
       - name: deployer
