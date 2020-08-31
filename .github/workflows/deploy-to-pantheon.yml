@@ -7,14 +7,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
       - uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.PANTHEON_SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Installing Terminus
+        uses: kopepasah/setup-pantheon-terminus@master
+        with:
+          pantheon-machine-token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
       - name: deployer
         env:
           pantheon_repo: '${{ secrets.PANTHEON_REPO }}'
+          pantheon_site_name: '${{ secrets.PANTHEON_SITE_NAME }}'
         run: |
           git remote add pantheon $pantheon_repo
           git push --force pantheon HEAD:master
+          commit_message=$(git log -1 --pretty=%B)
+          terminus env:deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
