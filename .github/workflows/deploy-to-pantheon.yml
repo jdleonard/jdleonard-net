@@ -1,0 +1,20 @@
+name: Deploy to Pantheon
+on:
+  push:
+    branches:
+      - 'master'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PANTHEON_SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: deployer
+        env:
+          pantheon_repo: '${{ secrets.PANTHEON_REPO }}'
+        run: |
+          git remote add pantheon $pantheon_repo
+          git push pantheon HEAD:master
