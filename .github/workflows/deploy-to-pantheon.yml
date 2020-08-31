@@ -13,9 +13,11 @@ jobs:
           key: ${{ secrets.PANTHEON_SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: Installing Terminus
-        uses: kopepasah/setup-pantheon-terminus@master
         with:
           pantheon-machine-token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+        run: |
+          curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar install
+          terminus auth:login --machine-token=$pantheon-machine-token
       - name: deployer
         env:
           pantheon_repo: '${{ secrets.PANTHEON_REPO }}'
