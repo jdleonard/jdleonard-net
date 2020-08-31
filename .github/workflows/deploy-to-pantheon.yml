@@ -14,12 +14,12 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: Installing Terminus
         env:
-          pantheon-machine-token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+          pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
         run: |
           composer global require consolidation/cgr
           PATH="$(composer config -g home)/vendor/bin:$PATH"
           cgr pantheon-systems/terminus
-          terminus auth:login --machine-token=$pantheon-machine-token
+          terminus auth:login --machine-token=$pantheon_machine_token
       - name: deployer
         env:
           pantheon_repo: '${{ secrets.PANTHEON_REPO }}'
