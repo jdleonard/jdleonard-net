@@ -16,7 +16,7 @@ jobs:
         env:
           pantheon-machine-token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
         run: |
-          curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar install
+          composer global require pantheon-systems/terminus
           terminus auth:login --machine-token=$pantheon-machine-token
       - name: deployer
         env:
