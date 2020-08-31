@@ -29,5 +29,7 @@ jobs:
         run: |
           git remote add pantheon $pantheon_repo
           git push --force pantheon HEAD:master
-          commit_message=$(git log -1 --pretty=%B)
-          terminus env:deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
+          terminus drush -y $pantheon_site_name.dev updatedb
+          terminus drush -y $pantheon_site_name.dev config:import
+#          commit_message=$(git log -1 --pretty=%B)
+#          terminus deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
