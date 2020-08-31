@@ -2,7 +2,7 @@ name: Deploy to Pantheon
 on:
   push:
     branches:
-      - 'master'
+      - 'gh-actions-2'
 jobs:
   build:
     runs-on: ubuntu-latest
