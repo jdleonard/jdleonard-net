@@ -1,4 +1,4 @@
-name: Deploy to Pantheon
+name: Build and deploy to Pantheon Dev
 on:
   push:
     branches:
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Get Composer cache directory
         id: composer-cache-dir
@@ -47,7 +47,7 @@ jobs:
       pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Get Composer cache directory
         id: composer-cache-dir
@@ -104,7 +104,7 @@ jobs:
       - name: Push code to Pantheon Dev
         run: |
           git remote add pantheon $pantheon_repo
-          git push --force pantheon HEAD:master
+          git push --force pantheon master
 #          commit_message=$(git log -1 --pretty=%B)
 #          terminus deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
 
