@@ -94,9 +94,11 @@ jobs:
         run: |
           git config --global user.email "github-actions@example.com"
           git config --global user.name "GitHub Actions"
+          rm -rf .git
           rm -rf .github
           rm -rf scripts
           rm -rf web/core/*.txt
+          git init
           git add --force .
           commit_message=$(git log -1 --pretty=%B)
           git commit -m "Automated deploy: $commit_message" >/dev/null
