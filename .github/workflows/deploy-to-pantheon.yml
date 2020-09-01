@@ -94,14 +94,14 @@ jobs:
         run: |
           git config --global user.email "github-actions@example.com"
           git config --global user.name "GitHub Actions"
+          commit_message=$(git log -1 --pretty=%B)
           rm -rf .git
           rm -rf .github
           rm -rf scripts
           rm -rf web/core/*.txt
           git init
           git add --force .
-          commit_message=$(git log -1 --pretty=%B)
-          git commit -m "Automated deploy: $commit_message"
+          git commit -m "Automated deploy: $commit_message" >/dev/null
 
       - name: Push code to Pantheon Dev
         run: |
