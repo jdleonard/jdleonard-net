@@ -71,7 +71,6 @@ jobs:
 
       - name: Composer install
         run: |
-          composer global require hirak/prestissimo
           composer install --no-dev --no-interaction --no-progress
 
       - name: Place SSH key
@@ -96,12 +95,11 @@ jobs:
           git config --global user.email "github-actions@example.com"
           git config --global user.name "GitHub Actions"
           rm -rf .github
-          rm -rf .gitignore
           rm -rf scripts
           rm -rf web/core/*.txt
           git add --force .
           commit_message=$(git log -1 --pretty=%B)
-          git commit -m "Automated deploy: $commit_message"
+          git commit -m "Automated deploy: $commit_message" >/dev/null
 
       - name: Push code to Pantheon Dev
         run: |
