@@ -38,6 +38,7 @@ jobs:
           composer install --no-dev --no-interaction --no-progress
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     env:
       pantheon_repo: ${{ secrets.PANTHEON_REPO }}
       pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
