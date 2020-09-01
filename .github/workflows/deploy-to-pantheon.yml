@@ -101,7 +101,7 @@ jobs:
           git init
           git add --force .
           commit_message=$(git log -1 --pretty=%B)
-          git commit -m "Automated deploy: $commit_message" >/dev/null
+          git commit -m "Automated deploy: $commit_message"
 
       - name: Push code to Pantheon Dev
         run: |
