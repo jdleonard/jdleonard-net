@@ -1,4 +1,4 @@
-name: Deploy Dev to Test
+name: Deploy Test to Live
 
 on: workflow_dispatch
 
@@ -12,7 +12,7 @@ env:
 
 jobs:
   deploy:
-    name: Deploy Pantheon Dev to Pantheon Test
+    name: Deploy Pantheon Test to Pantheon Live
     runs-on: ubuntu-latest
     steps:
       - name: Setup PHP
@@ -47,9 +47,9 @@ jobs:
 
       - name: Deploy
         run: |
-          terminus drush -y $pantheon_site_name.test deploy --sync-content
+          terminus drush -y $pantheon_site_name.live deploy
 
       - name: Post deployment Drush commands
         run: |
-          terminus drush -y $pantheon_site_name.test updatedb
-          terminus drush -y $pantheon_site_name.test config:import
+          terminus drush -y $pantheon_site_name.live updatedb
+          terminus drush -y $pantheon_site_name.live config:import

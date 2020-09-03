@@ -1,4 +1,4 @@
-name: Deploy to Pantheon Dev
+name: Deploy to Dev
 
 on:
   push:
