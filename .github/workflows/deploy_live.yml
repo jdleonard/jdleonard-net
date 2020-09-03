@@ -33,9 +33,6 @@ jobs:
       - name: Avoid GitHub rate limit for Composer
         run: composer config -g github-oauth.github.com $COMPOSER_TOKEN
 
-      - name: Speed up Composer
-        run: composer global require hirak/prestissimo
-
       - name: Install Terminus
         # We use cgr to avoid dependency conflicts
         run: |
