@@ -47,7 +47,7 @@ jobs:
           terminus auth:login --machine-token=$pantheon_machine_token
 
       - name: Enable maintenance mode
-        run: terminus drush -y $pantheon_site_name.$pantheon_env sset system.maintenance_mode 1
+        run: terminus drush -y ${{ secrets.PANTHEON_SITE_NAME }}.test sset system.maintenance_mode 1
 
       - name: Deploy
         run: |
