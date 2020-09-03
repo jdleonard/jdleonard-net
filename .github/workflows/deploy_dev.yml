@@ -85,13 +85,13 @@ jobs:
           git commit -m "Automated deploy: $commit_message" >/dev/null
 
       - name: Enable maintenance mode
-        run: terminus drush -y $pantheon_site_name.$pantheon_env cset system.maintenance_mode 1
+        run: terminus drush -y $pantheon_site_name.$pantheon_env sset system.maintenance_mode 1
 
       - name: Clone database and files from Live
         run: terminus env:clone-content -y $pantheon_site_name.live $pantheon_env
 
       - name: Enable maintenance mode again
-        run: terminus drush -y $pantheon_site_name.$pantheon_env cset system.maintenance_mode 1
+        run: terminus drush -y $pantheon_site_name.$pantheon_env sset system.maintenance_mode 1
 
       - name: Push code to Pantheon Dev
         run: |
@@ -105,4 +105,4 @@ jobs:
         run: terminus drush -y $pantheon_site_name.$pantheon_env config:import
 
       - name: Disable maintenance mode
-        run: terminus drush -y $pantheon_site_name.$pantheon_env cset system.maintenance_mode 0
+        run: terminus drush -y $pantheon_site_name.$pantheon_env sset system.maintenance_mode 0
