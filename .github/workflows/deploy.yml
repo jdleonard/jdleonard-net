@@ -47,11 +47,6 @@ jobs:
       - name: Composer install
         run: composer install --no-dev --no-interaction --no-progress
 
-      - name: Run PHPCS with DrupalPractice on modules
-        uses: docker://hussainweb/drupalqa:php7.4
-        with:
-          args: phpcs --standard="Drupal,DrupalPractice" -n --extensions="php,module,install,theme" web/themes/custom web/modules/custom --ignore=web/themes/*/dist/,web/themes/*/Gulpfile.js,web/themes/*/node_modules/
-
       - name: Place SSH key
         uses: shimataro/ssh-key-action@v2
         with:
