@@ -51,8 +51,8 @@ jobs:
       - name: Avoid GitHub rate limit for Composer
         run: composer config -g github-oauth.github.com $COMPOSER_TOKEN
 
-      - name: Speed up Composer
-        run: composer global require hirak/prestissimo
+#      - name: Speed up Composer
+#        run: composer global require hirak/prestissimo
 
       - name: Composer install
         run: composer install --no-dev --no-interaction --no-progress
