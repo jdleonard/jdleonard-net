@@ -1,6 +1,9 @@
-name: Deploy Dev to Test
+name: CI (except master)
 
-on: workflow_dispatch
+on:
+  push:
+    branches-ignore:
+      - 'master'
 
 env:
   # Used by shivammathur/setup-php (as well as our composer commands)
@@ -11,14 +14,27 @@ env:
   pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
 
 jobs:
-  deploy:
-    name: Deploy Pantheon Dev to Pantheon Test
+  phpcs-drupal:
+    name: Drupal coding standards
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - uses: guix77/phpcs-drupal-action@v1.0.0
+
+  deploy:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: $php_version
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
       - name: Get Composer cache directory
         id: composer-cache-dir
@@ -28,25 +44,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-composer-deploy
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Avoid GitHub rate limit for Composer
         run: composer config -g github-oauth.github.com $COMPOSER_TOKEN
 
-      - name: Install Terminus
-        # We use cgr to avoid dependency conflicts
-        run: |
-          composer global require consolidation/cgr
-          PATH="$(composer config -g home)/vendor/bin:$PATH"
-          echo "::add-path::$(composer config -g home)/vendor/bin"
-          cgr pantheon-systems/terminus
-          terminus auth:login --machine-token=$pantheon_machine_token
-
-      - name: Deploy
-        run: |
-          terminus drush -y $pantheon_site_name.test deploy --sync-content
-
-      - name: Post deployment Drush commands
-        run: |
-          terminus drush -y $pantheon_site_name.test updatedb
-          terminus drush -y $pantheon_site_name.test config:import
+      - name: Composer install
+        run: composer install --no-dev --no-interaction --no-progress
