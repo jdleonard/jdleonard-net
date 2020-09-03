@@ -1,0 +1,99 @@
+name: Deploy to Pantheon Dev
+
+on:
+  push:
+    branches:
+      - 'master'
+
+env:
+  # Used by shivammathur/setup-php (as well as our composer commands)
+  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  php_version: '7.4'
+  pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+  pantheon_repo: ${{ secrets.PANTHEON_REPO }}
+  pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
+
+jobs:
+  phpcs-drupal:
+    name: Drupal coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: guix77/phpcs-drupal-action@v1.0.0
+
+  deploy:
+    name: Deploy to Pantheon Dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: $php_version
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Get Composer cache directory
+        id: composer-cache-dir
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Avoid GitHub rate limit for Composer
+        run: composer config -g github-oauth.github.com $COMPOSER_TOKEN
+
+      - name: Speed up Composer
+        run: composer global require hirak/prestissimo
+
+      - name: Composer install
+        run: composer install --no-dev --no-interaction --no-progress
+
+      - name: Place SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PANTHEON_SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Install Terminus
+        # We use cgr to avoid dependency conflicts
+        run: |
+          composer global require consolidation/cgr
+          PATH="$(composer config -g home)/vendor/bin:$PATH"
+          echo "::add-path::$(composer config -g home)/vendor/bin"
+          cgr pantheon-systems/terminus
+          terminus auth:login --machine-token=$pantheon_machine_token
+
+      - name: Prepare code for deployment
+        run: |
+          git config --global user.email "github-actions@example.com"
+          git config --global user.name "GitHub Actions"
+          commit_message=$(git log -1 --pretty=%B)
+          rm -rf .git
+          rm -rf .github
+          rm -rf scripts
+          rm -rf web/core/*.txt
+          git init
+          git config --local gc.auto 0
+          git add --force .
+          git commit -m "Automated deploy: $commit_message" >/dev/null
+
+      - name: Push code to Pantheon Dev
+        run: |
+          git remote add pantheon $pantheon_repo
+          git push --force pantheon HEAD:master
+#          commit_message=$(git log -1 --pretty=%B)
+#          terminus deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
+
+      - name: Post deployment Drush commands
+        run: |
+          terminus drush -y $pantheon_site_name.dev updatedb
+          terminus drush -y $pantheon_site_name.dev config:import
