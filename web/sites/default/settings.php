@@ -23,7 +23,7 @@ include __DIR__ . "/settings.pantheon.php";
  *
  * https://www.drupal.org/project/drupal/issues/3091285
  */
-// $settings['skip_permissions_hardening'] = TRUE;
+$settings['skip_permissions_hardening'] = TRUE;
 
 $settings['config_sync_directory'] = "../config";
 
