@@ -55,7 +55,6 @@ jobs:
 
       - name: Install Terminus
         run: |
-          composer global require hirak/prestissimo
           composer global require consolidation/cgr
           PATH="$(composer config -g home)/vendor/bin:$PATH"
           echo "::add-path::$(composer config -g home)/vendor/bin"
