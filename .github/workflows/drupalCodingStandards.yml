@@ -1,6 +1,9 @@
 name: Drupal coding standards
 
-on: push
+on:
+  push:
+    branches:
+      - 'gh-actions-2'
 
 jobs:
   phpcs-drupal:

@@ -1,8 +1,10 @@
 name: Deploy to Pantheon Dev
+
 on:
   push:
     branches:
       - 'gh-actions-2'
+
 env:
   # Used by shivammathur/setup-php (as well as our composer commands)
   COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -10,6 +12,7 @@ env:
   pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
   pantheon_repo: ${{ secrets.PANTHEON_REPO }}
   pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
+
 jobs:
   deploy:
     name: Deploy to Pantheon Dev
