@@ -37,6 +37,12 @@ jobs:
       - name: Avoid GitHub rate limit for Composer
         run: composer config -g github-oauth.github.com $COMPOSER_TOKEN
 
+      - name: Place SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PANTHEON_SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
       - name: Install Terminus
         # We use cgr to avoid dependency conflicts
         run: |
