@@ -31,7 +31,6 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache Composer dependencies
-        id: composer-cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.composer-cache-dir.outputs.dir }}
@@ -43,8 +42,6 @@ jobs:
         run: composer config -g github-oauth.github.com $COMPOSER_TOKEN
 
       - name: Speed up Composer
-        # Speeding up Composer is counterproductive if we have the Composer results cached already
-        if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer global require hirak/prestissimo
 
       - name: Composer install
