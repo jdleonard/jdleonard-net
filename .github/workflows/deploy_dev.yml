@@ -64,6 +64,7 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Install Terminus
+        # We use cgr to avoid dependency conflicts
         run: |
           composer global require consolidation/cgr
           PATH="$(composer config -g home)/vendor/bin:$PATH"
@@ -92,7 +93,7 @@ jobs:
 #          commit_message=$(git log -1 --pretty=%B)
 #          terminus deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
 
-#      - name: Post deployment Drush commands
-#        run: |
-#          terminus drush -y $pantheon_site_name.dev updatedb
-#          terminus drush -y $pantheon_site_name.dev config:import
+      - name: Post deployment Drush commands
+        run: |
+          terminus drush -y $pantheon_site_name.dev updatedb
+          terminus drush -y $pantheon_site_name.dev config:import
