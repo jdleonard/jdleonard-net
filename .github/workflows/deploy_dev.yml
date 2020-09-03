@@ -9,6 +9,7 @@ env:
   # Used by shivammathur/setup-php (as well as our composer commands)
   COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   php_version: '7.4'
+  pantheon_env: 'dev'
   pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
   pantheon_repo: ${{ secrets.PANTHEON_REPO }}
   pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
@@ -83,14 +84,25 @@ jobs:
           git add --force .
           git commit -m "Automated deploy: $commit_message" >/dev/null
 
+      - name: Enable maintenance mode
+        run: terminus drush -y $pantheon_site_name.$pantheon_env cset system.maintenance_mode 1
+
+      - name: Clone database and files from Live
+        run: terminus env:clone-content -y $pantheon_site_name.live $pantheon_env
+
+      - name: Enable maintenance mode again
+        run: terminus drush -y $pantheon_site_name.$pantheon_env cset system.maintenance_mode 1
+
       - name: Push code to Pantheon Dev
         run: |
           git remote add pantheon $pantheon_repo
           git push --force pantheon HEAD:master
-#          commit_message=$(git log -1 --pretty=%B)
-#          terminus deploy $pantheon_site_name.test --note="Automated deploy: $commit_message"
 
-      - name: Post deployment Drush commands
-        run: |
-          terminus drush -y $pantheon_site_name.dev updatedb
-          terminus drush -y $pantheon_site_name.dev config:import
+      - name: drush updatedb
+        run: terminus drush -y $pantheon_site_name.$pantheon_env updatedb
+
+      - name: drush config:import
+        run: terminus drush -y $pantheon_site_name.$pantheon_env config:import
+
+      - name: Disable maintenance mode
+        run: terminus drush -y $pantheon_site_name.$pantheon_env cset system.maintenance_mode 0

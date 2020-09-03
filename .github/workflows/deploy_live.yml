@@ -1,4 +1,4 @@
-name: Deploy Test to Live
+name: Deploy to Live (DANGER!)
 
 on: workflow_dispatch
 
@@ -6,6 +6,7 @@ env:
   # Used by shivammathur/setup-php (as well as our composer commands)
   COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   php_version: '7.4'
+  pantheon_env: 'live'
   pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
   pantheon_repo: ${{ secrets.PANTHEON_REPO }}
   pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
@@ -45,11 +46,22 @@ jobs:
           cgr pantheon-systems/terminus
           terminus auth:login --machine-token=$pantheon_machine_token
 
+      - name: Create Backup
+        run: terminus backup:create $pantheon_site_name.$pantheon_env
+
+      - name: Enable maintenance mode
+        run: terminus drush -y $pantheon_site_name.$pantheon_env cset system.maintenance_mode 1
+
       - name: Deploy
         run: |
-          terminus drush -y $pantheon_site_name.live deploy
+          commit_message=$(git log -1 --pretty=%B)
+          terminus deploy $pantheon_site_name.$pantheon_env --note="Automated deploy: $commit_message"
 
-      - name: Post deployment Drush commands
-        run: |
-          terminus drush -y $pantheon_site_name.live updatedb
-          terminus drush -y $pantheon_site_name.live config:import
+      - name: drush updatedb
+        run: terminus drush -y $pantheon_site_name.$pantheon_env updatedb
+
+      - name: drush config:import
+        run: terminus drush -y $pantheon_site_name.$pantheon_env config:import
+
+      - name: Disable maintenance mode
+        run: terminus drush -y $pantheon_site_name.$pantheon_env cset system.maintenance_mode 0
