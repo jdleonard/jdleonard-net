@@ -14,6 +14,7 @@ services:
       environment:
         DRUSH_OPTIONS_URI: https://jdl.lndo.site
     run:
+      - composer global require hirak/prestissimo
       - composer install
 excludes:
   - vendor
