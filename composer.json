@@ -17,10 +17,10 @@
         "drupal/core-composer-scaffold": "^9.0",
         "drupal/core-recommended": "^9.0",
         "drush/drush": "^10",
-        "pantheon-systems/drupal-integrations": "^9",
-        "zaporylie/composer-drupal-optimizations": "^1.1"
+        "pantheon-systems/drupal-integrations": "^9"
     },
     "require-dev": {
+        "zaporylie/composer-drupal-optimizations": "^1.1"
     },
     "conflict": {
         "drupal/drupal": "*"
