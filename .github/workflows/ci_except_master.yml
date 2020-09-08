@@ -1,9 +1,9 @@
-name: CI (except master)
+name: CI (except main)
 
 on:
   push:
     branches-ignore:
-      - 'master'
+      - 'main'
 
 env:
   # Used by shivammathur/setup-php (as well as our composer commands)

@@ -3,7 +3,7 @@ name: Deploy to Dev
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
 
 env:
   # Used by shivammathur/setup-php (as well as our composer commands)
