@@ -3,12 +3,8 @@ name: Deploy to Live (DANGER!)
 on: workflow_dispatch
 
 env:
-  # Used by shivammathur/setup-php (as well as our composer commands)
-  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   php_version: '7.4'
   pantheon_env: 'live'
-  pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
-  pantheon_repo: ${{ secrets.PANTHEON_REPO }}
   pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
 
 jobs:
@@ -17,10 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@2036a08e25fa78bbd946711a407b529a0a1204bf
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@1c76a2a403a2b2a322b4a13e3e0613c154eeb158
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           php-version: $php_version
 
@@ -29,16 +27,16 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@5ca27f25cb3a0babe750cad7e4fddd3e55f29e9a
         with:
           path: ${{ steps.composer-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-composer-deploy
 
       - name: Avoid GitHub rate limit for Composer
-        run: composer config -g github-oauth.github.com $COMPOSER_TOKEN
+        run: composer config -g github-oauth.github.com ${{ secrets.GITHUB_TOKEN }}
 
       - name: Place SSH key
-        uses: shimataro/ssh-key-action@v2
+        uses: shimataro/ssh-key-action@6f350ca8484d8d55c2e361e74d17e638dabe713a
         with:
           key: ${{ secrets.PANTHEON_SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
@@ -50,7 +48,7 @@ jobs:
           PATH="$(composer config -g home)/vendor/bin:$PATH"
           echo "::add-path::$(composer config -g home)/vendor/bin"
           cgr pantheon-systems/terminus
-          terminus auth:login --machine-token=$pantheon_machine_token
+          terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
 
       - name: Create Backup
         run: terminus backup:create $pantheon_site_name.$pantheon_env
