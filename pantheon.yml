@@ -10,10 +10,15 @@ workflows:
       # Log to New Relic when deploying to test or live.
       - type: webphp
         description: Log to New Relic
-        script: private/scripts/new_relic_deploy.php
+        script: private/quicksilver/new_relic_deploy.php
+
   sync_code:
     after:
+      - type: webphp
+        description: Post deployment site updates.
+        script: private/quicksilver/sync_code.php
+
       # Also log sync_code so you can track new code going into dev/multidev.
       - type: webphp
         description: Log to New Relic
-        script: private/scripts/new_relic_deploy.php
+        script: private/quicksilver/new_relic_deploy.php

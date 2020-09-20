@@ -1,13 +1,20 @@
-name: Deploy to Dev
+name: Deploy to MultiDev
 
 on:
-  push:
-    branches:
-      - 'main'
+  workflow_dispatch:
+    inputs:
+      destination_env:
+        description: 'To which MultiDev environment do you wish to deploy? (m1-m10)'
+        required: true
+        default: 'm1'
+      clone_env:
+        description: 'From which other Pantheon environment shall we clone the database and files? (dev, test, live, m1-m10)'
+        required: true
+        default: 'live'
 
 env:
   php_version: '7.4'
-  pantheon_env: 'dev'
+  pantheon_env: ${{ github.event.inputs.destination_env }}
   pantheon_repo: ${{ secrets.PANTHEON_REPO }}
   pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
 
@@ -16,18 +23,18 @@ jobs:
     name: Drupal coding standards
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@2036a08e25fa78bbd946711a407b529a0a1204bf # v2.3.2
-      - uses: guix77/phpcs-drupal-action@13654eb230b095cb6ad4eec195355d9cf0033fa5 # v1.0.0
+      - uses: actions/checkout@2036a08e25fa78bbd946711a407b529a0a1204bf
+      - uses: guix77/phpcs-drupal-action@13654eb230b095cb6ad4eec195355d9cf0033fa5
 
   deploy:
-    name: Deploy to Pantheon Dev
+    name: Deploy to Pantheon MultiDev
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@2036a08e25fa78bbd946711a407b529a0a1204bf
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@1c76a2a403a2b2a322b4a13e3e0613c154eeb158 # 2.5.0
+        uses: shivammathur/setup-php@1c76a2a403a2b2a322b4a13e3e0613c154eeb158
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -41,7 +48,7 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache Composer dependencies
-        uses: actions/cache@5ca27f25cb3a0babe750cad7e4fddd3e55f29e9a # v2.1.1
+        uses: actions/cache@5ca27f25cb3a0babe750cad7e4fddd3e55f29e9a
         with:
           path: ${{ steps.composer-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -55,7 +62,7 @@ jobs:
         run: composer install --no-dev --no-interaction --no-progress
 
       - name: Place SSH key
-        uses: shimataro/ssh-key-action@6f350ca8484d8d55c2e361e74d17e638dabe713a # v2.1.0
+        uses: shimataro/ssh-key-action@6f350ca8484d8d55c2e361e74d17e638dabe713a
         with:
           key: ${{ secrets.PANTHEON_SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
@@ -86,19 +93,16 @@ jobs:
       - name: Enable maintenance mode
         run: terminus drush -y $pantheon_site_name.$pantheon_env sset system.maintenance_mode 1
 
-      #      - name: Clone database and files from Live
-      #        run: terminus env:clone-content -y $pantheon_site_name.live $pantheon_env
-
-      - name: Clone database and files from Test
-        run: terminus env:clone-content -y $pantheon_site_name.test $pantheon_env
+      - name: Clone database and files from Live
+        run: terminus env:clone-content -y $pantheon_site_name.${{ github.event.inputs.clone_env }} $pantheon_env
 
       - name: Enable maintenance mode again
         run: terminus drush -y $pantheon_site_name.$pantheon_env sset system.maintenance_mode 1
 
-      - name: Push code to Pantheon Dev
+      - name: Push code to Pantheon MultiDev
         run: |
           git remote add pantheon $pantheon_repo
-          git push --force pantheon HEAD:master
+          git push --force pantheon HEAD:$pantheon_env
 
       # There is no easy way to know when the code has actually synced to the Pantheon environment so we can't reliably
       # run Drush commands immediately after pushing code. Thus, we run database updates, import config, and disable
