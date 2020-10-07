@@ -6,12 +6,7 @@ on:
       - 'main'
 
 env:
-  # Used by shivammathur/setup-php (as well as our composer commands)
-  COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   php_version: '7.4'
-  pantheon_machine_token: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
-  pantheon_repo: ${{ secrets.PANTHEON_REPO }}
-  pantheon_site_name: ${{ secrets.PANTHEON_SITE_NAME }}
 
 jobs:
   phpcs-drupal:
@@ -30,6 +25,8 @@ jobs:
 
       - name: Setup PHP
         uses: shivammathur/setup-php@1c76a2a403a2b2a322b4a13e3e0613c154eeb158
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           php-version: $php_version
 
@@ -49,7 +46,7 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Avoid GitHub rate limit for Composer
-        run: composer config -g github-oauth.github.com $COMPOSER_TOKEN
+        run: composer config -g github-oauth.github.com ${{ secrets.GITHUB_TOKEN }}
 
       - name: Composer install
         run: composer install --no-dev --no-interaction --no-progress
