@@ -88,6 +88,9 @@
 # repository as a custom upstream. The .gitignore file
 # is not modified in the GitHub PR workflow.
 
+/web/themes/custom/jd2/node_modules/
+/web/themes/custom/jd2/css/
+
 
 # :::::::::::::::::::::: cut ::::::::::::::::::::::
 

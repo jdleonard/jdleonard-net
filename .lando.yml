@@ -12,12 +12,25 @@ services:
   appserver:
     overrides:
       environment:
-        DRUSH_OPTIONS_URI: https://jdl.lndo.site
+        DRUSH_OPTIONS_URI: http://jdl.lndo.site
     run:
       - composer global require hirak/prestissimo
       - composer install
+  node:
+    type: node:12
+    run:
+      - cd /app/web/themes/custom/jd2 && npm install --prefix=/app/web/themes/custom/jd2
+      - npm install --global gulp-cli
+#      - cd /app/web/themes/custom/jd2 && gulp
+tooling:
+  gulp:
+    service: node
+  node:
+    service: node
+  npm:
+    service: node
 excludes:
   - vendor
   - web/core
   - web/libraries
-  - web/themes/custom/jd1/node_modules
+  - web/themes/custom/jd2/node_modules

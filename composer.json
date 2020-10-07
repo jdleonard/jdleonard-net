@@ -14,6 +14,8 @@
         "composer/installers": "^1.9",
         "cweagans/composer-patches": "^1.6",
         "drupal/admin_toolbar": "^2.3",
+        "drupal/bootstrap_barrio": "^5.1",
+        "drupal/bootstrap_sass": "^5",
         "drupal/core": "^9.0",
         "drupal/core-composer-scaffold": "^9.0",
         "drupal/core-recommended": "^9.0",
