@@ -28,7 +28,7 @@ jobs:
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          php-version: $php_version
+          php-version: ${{ env.php_version }}
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict

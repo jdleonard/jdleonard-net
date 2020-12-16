@@ -20,7 +20,7 @@ jobs:
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          php-version: $php_version
+          php-version: ${{ env.php_version }}
 
       - name: Get Composer cache directory
         id: composer-cache-dir
