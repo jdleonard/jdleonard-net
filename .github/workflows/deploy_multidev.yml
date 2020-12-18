@@ -23,18 +23,18 @@ jobs:
     name: Drupal coding standards
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@2036a08e25fa78bbd946711a407b529a0a1204bf
-      - uses: guix77/phpcs-drupal-action@13654eb230b095cb6ad4eec195355d9cf0033fa5
+      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
+      - uses: guix77/phpcs-drupal-action@13654eb230b095cb6ad4eec195355d9cf0033fa5 # v1.0.0
 
   deploy:
     name: Deploy to Pantheon MultiDev
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@2036a08e25fa78bbd946711a407b529a0a1204bf
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@1c76a2a403a2b2a322b4a13e3e0613c154eeb158
+        uses: shivammathur/setup-php@c0c6e403b6c6c44657450627093edddf3b905c5b # 2.9.0
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -48,7 +48,7 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
       - name: Cache Composer dependencies
-        uses: actions/cache@5ca27f25cb3a0babe750cad7e4fddd3e55f29e9a
+        uses: actions/cache@0781355a23dac32fd3bac414512f4b903437991a # v2.1.3
         with:
           path: ${{ steps.composer-cache-dir.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -62,7 +62,7 @@ jobs:
         run: composer install --no-dev --no-interaction --no-progress
 
       - name: Place SSH key
-        uses: shimataro/ssh-key-action@6f350ca8484d8d55c2e361e74d17e638dabe713a
+        uses: shimataro/ssh-key-action@6f350ca8484d8d55c2e361e74d17e638dabe713a # v2.1.0
         with:
           key: ${{ secrets.PANTHEON_SSH_KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
