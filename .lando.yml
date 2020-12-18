@@ -8,13 +8,13 @@ config:
   index: false
   edge: true
   cache: false
+  composer_version: 2
 services:
   appserver:
     overrides:
       environment:
         DRUSH_OPTIONS_URI: https://jdl.lndo.site
     run:
-      - composer global require hirak/prestissimo
       - composer install
 excludes:
   - vendor

@@ -24,7 +24,6 @@
         "pantheon-systems/drupal-integrations": "^9"
     },
     "require-dev": {
-        "zaporylie/composer-drupal-optimizations": "^1.1"
     },
     "conflict": {
         "drupal/drupal": "*"
