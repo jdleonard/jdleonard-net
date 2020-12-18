@@ -45,8 +45,6 @@ jobs:
         # We use cgr to avoid dependency conflicts
         run: |
           composer global require consolidation/cgr
-          PATH="$(composer config -g home)/vendor/bin:$PATH"
-          echo "::add-path::$(composer config -g home)/vendor/bin"
           cgr pantheon-systems/terminus
           terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
 
