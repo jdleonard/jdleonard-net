@@ -16,6 +16,15 @@ services:
         DRUSH_OPTIONS_URI: https://jdl.lndo.site
     run:
       - composer install
+tooling:
+  pull:
+    options:
+      code:
+        default: none
+      database:
+        default: test
+      files:
+        default: test
 excludes:
   - vendor
   - web/core
